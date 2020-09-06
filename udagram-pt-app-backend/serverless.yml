@@ -1,0 +1,166 @@
+service:
+  name: udagram-pt-app-backend
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js
+    includeModules: true
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  environment:
+    SECTIONS_TABLE: Sections-${self:provider.stage}
+    PARTICIPATIONS_TABLE: Participations-${self:provider.stage}
+    PERSONS_TABLE: Persons-${self:provider.stage}
+    TOKENS_TABLE: Tokens-${self:provider.stage}
+    WEEK_NUM_INDEX: weekNumIndex
+    SECTION_ID_INDEX: sectionIdIndex
+    TRAINER_ID_INDEX: trainerIdIndex
+    CREATOR_ID_INDEX: creatorIdIndex
+    PARTICIPATION_ID_INDEX: participationIdIndex
+    PERSON_ID_INDEX: personIdIndex
+    TOKEN_INDEX: tokenIndex
+
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          method: get
+          path: hello
+
+resources:
+  Resources:
+    SectionsDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.SECTIONS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: sectionId
+            AttributeType: S
+          - AttributeName: weekNum
+            AttributeType: S
+          - AttributeName: trainerId
+            AttributeType: S
+          - AttributeName: createrId
+            AttributeType: S
+          - AttributeName: startDateTime
+            AttributeType: S
+        KeySchema:
+          - AttributeName: sectionId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.WEEK_NUM_INDEX}
+            KeySchema:
+              - AttributeName: weekNum
+                KeyType: HASH
+              - AttributeName: startDateTime
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: ${self:provider.environment.TRAINER_ID_INDEX}
+            KeySchema:
+              - AttributeName: trainerId
+                KeyType: HASH
+              - AttributeName: weekNum
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: ${self:provider.environment.CREATOR_ID_INDEX}
+            KeySchema:
+              - AttributeName: createrId
+                KeyType: HASH
+              - AttributeName: weekNum
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+    ParticipationsDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.PARTICIPATIONS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: participationId
+            AttributeType: S
+          - AttributeName: weekNum
+            AttributeType: S
+          - AttributeName: personId
+            AttributeType: S
+          - AttributeName: sectionId
+            AttributeType: S
+          - AttributeName: startDateTime
+            AttributeType: S
+        KeySchema:
+          - AttributeName: participationId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.WEEK_NUM_INDEX}
+            KeySchema:
+              - AttributeName: weekNum
+                KeyType: HASH
+              - AttributeName: startDateTime
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: ${self:provider.environment.PERSON_ID_INDEX}
+            KeySchema:
+              - AttributeName: personId
+                KeyType: HASH
+              - AttributeName: weekNum
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: ${self:provider.environment.SECTION_ID_INDEX}
+            KeySchema:
+              - AttributeName: sectionId
+                KeyType: HASH
+              - AttributeName: weekNum
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+
+    PersonsDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.PERSONS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: personId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: personId
+            KeyType: HASH
+
+    TokensDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.TOKENS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: personId
+            AttributeType: S
+          - AttributeName: token
+            AttributeType: S
+        KeySchema:
+          - AttributeName: token
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.PERSON_ID_INDEX}
+            KeySchema:
+              - AttributeName: personId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
