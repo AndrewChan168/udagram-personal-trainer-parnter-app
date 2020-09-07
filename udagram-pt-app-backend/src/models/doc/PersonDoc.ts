@@ -4,4 +4,5 @@ export interface PersonDoc {
     contactNumber: number,
     photoURL: string,
     thumbnailURL: string,
+    name: string
 }

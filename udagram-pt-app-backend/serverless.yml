@@ -12,6 +12,7 @@ custom:
 # Add the serverless-webpack plugin
 plugins:
   - serverless-webpack
+  - serverless-iam-roles-per-function
 
 provider:
   name: aws
@@ -39,6 +40,115 @@ functions:
       - http:
           method: get
           path: hello
+
+  GetPerson:
+    handler: src/lambda/http/person/getPerson.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PERSONS_TABLE}
+    events:
+      - http:
+          method: get
+          path: person/{personId}
+          cors: true
+
+  PostPerson:
+    handler: src/lambda/http/person/postPerson.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PERSONS_TABLE}
+    events:
+      - http:
+          method: post
+          path: person
+          cors: true
+
+  GetSection:
+    handler: src/lambda/http/section/getSection.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.SECTIONS_TABLE}
+    events:
+      - http:
+          method: get
+          path: section/{sectionId}
+          cors: true
+
+  GetSecByTrainer:
+    handler: src/lambda/http/section/getSecByTrainer.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PERSONS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.SECTIONS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.SECTIONS_TABLE}/index/${self:provider.environment.TRAINER_ID_INDEX}
+    events:
+      - http:
+          method: get
+          path: section/trainer/{trainerId}/week/{week}
+          cors: true
+
+  GetSecByCreator:
+    handler: src/lambda/http/section/getSecByCreator.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PERSONS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.SECTIONS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.SECTIONS_TABLE}/index/${self:provider.environment.CREATOR_ID_INDEX}
+    events:
+      - http:
+          method: get
+          path: section/creator/{creatorId}/week/{week}
+          cors: true
+
+  PostSection:
+    handler: src/lambda/http/section/postSection.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.SECTIONS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PERSONS_TABLE}
+    events:
+      - http:
+          method: post
+          path: section
+          cors: true
 
 resources:
   Resources:

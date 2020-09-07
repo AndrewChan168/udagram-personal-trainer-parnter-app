@@ -59,16 +59,24 @@ class Section{
         return result.Items as SectionDoc[]
     }
 
-    async getSectionsByTrainerIdInWeeksRange(trainerId:string, startWeek:string, endWeek:string): Promise<SectionDoc[]>{
+    //async getSectionsByTrainerIdInWeeksRange(trainerId:string, startWeek:string, endWeek:string): Promise<SectionDoc[]>{
+    async getSectionsByTrainerIdInWeeksRange(trainerId:string, week:string): Promise<SectionDoc[]>{
         const result = await this.docClient.query({
             TableName: this.tableName,
             IndexName: this.trainerIdIndex,
+            KeyConditionExpression: 'trainerId=:trainerId and weeknum=:week',
+            ExpressionAttributeValues: {
+                ':trainerId':trainerId,
+                ':week':week
+            }
+            /*
             KeyConditionExpression: 'trainerId=:trainerId and weeknum>=:startWeek and weeknum<=:endWeek',
             ExpressionAttributeValues: {
                 ':trainerId':trainerId,
                 ':startWeek':startWeek,
                 ':endWeek':endWeek,
             }
+            */
         }).promise()
 
         return result.Items as SectionDoc[]
@@ -87,16 +95,23 @@ class Section{
         return result.Items as SectionDoc[]
     }
 
-    async getSectionsByCreatorIdInWeeksRange(creatorId:string, startWeek:string, endWeek:string): Promise<SectionDoc[]>{
+    //async getSectionsByCreatorIdInWeeksRange(creatorId:string, startWeek:string, endWeek:string): Promise<SectionDoc[]>{
+    async getSectionsByCreatorIdInWeeksRange(creatorId:string, week:string): Promise<SectionDoc[]>{
         const result = await this.docClient.query({
             TableName: this.tableName,
             IndexName: this.creatorIdIndex,
-            KeyConditionExpression: 'creatorId=:creatorId and weeknum>=:startWeek and weeknum<=:endWeek',
+            KeyConditionExpression: 'creatorId=:creatorId and weeknum=:week',
+            ExpressionAttributeValues: {
+                ':creatorId':creatorId,
+                ':week':week
+            }
+            /*
+            KeyConditionExpression: 'creatorId=:creatorId and weeknum=:startWeek and weeknum<=:endWeek',
             ExpressionAttributeValues: {
                 ':creatorId':creatorId,
                 ':startWeek':startWeek,
                 ':endWeek':endWeek,
-            }
+            }*/
         }).promise()
 
         return result.Items as SectionDoc[]
