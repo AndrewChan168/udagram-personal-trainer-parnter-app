@@ -11,7 +11,7 @@ class Section{
         private readonly tableName: string,
         private readonly weekNumIndex:string,
         private readonly trainerIdIndex: string,
-        private readonly creatorIdIndex:string,
+        private readonly createrIdIndex:string,
     ){}
 
     async createSection(section:SectionDoc){
@@ -59,59 +59,46 @@ class Section{
         return result.Items as SectionDoc[]
     }
 
-    //async getSectionsByTrainerIdInWeeksRange(trainerId:string, startWeek:string, endWeek:string): Promise<SectionDoc[]>{
-    async getSectionsByTrainerIdInWeeksRange(trainerId:string, week:string): Promise<SectionDoc[]>{
+    async getSectionsByTrainerIdInWeeksRange(trainerId:string, weekNum:string): Promise<SectionDoc[]>{
+        console.log(`getSectionsByTrainerIdInWeeksRange(trainerId:${trainerId}, weekNum:${weekNum})`)
         const result = await this.docClient.query({
             TableName: this.tableName,
             IndexName: this.trainerIdIndex,
-            KeyConditionExpression: 'trainerId=:trainerId and weeknum=:week',
+            KeyConditionExpression: 'trainerId=:trainerId and weekNum=:weekNum',
+            //FilterExpression: 'weekNum=:weekNum',
             ExpressionAttributeValues: {
                 ':trainerId':trainerId,
-                ':week':week
-            }
-            /*
-            KeyConditionExpression: 'trainerId=:trainerId and weeknum>=:startWeek and weeknum<=:endWeek',
-            ExpressionAttributeValues: {
-                ':trainerId':trainerId,
-                ':startWeek':startWeek,
-                ':endWeek':endWeek,
-            }
-            */
-        }).promise()
-
-        return result.Items as SectionDoc[]
-    }
-
-    async getSectionsByCreatorId(creatorId:string): Promise<SectionDoc[]>{
-        const result = await this.docClient.query({
-            TableName: this.tableName,
-            IndexName: this.creatorIdIndex,
-            KeyConditionExpression: 'creatorId=:creatorId',
-            ExpressionAttributeValues: {
-                ':creatorId':creatorId,
+                ':weekNum':weekNum,
             }
         }).promise()
 
         return result.Items as SectionDoc[]
     }
 
-    //async getSectionsByCreatorIdInWeeksRange(creatorId:string, startWeek:string, endWeek:string): Promise<SectionDoc[]>{
-    async getSectionsByCreatorIdInWeeksRange(creatorId:string, week:string): Promise<SectionDoc[]>{
+    async getSectionsByCreaterId(createrId:string): Promise<SectionDoc[]>{
         const result = await this.docClient.query({
             TableName: this.tableName,
-            IndexName: this.creatorIdIndex,
-            KeyConditionExpression: 'creatorId=:creatorId and weeknum=:week',
+            IndexName: this.createrIdIndex,
+            KeyConditionExpression: 'createrId=:createrId',
             ExpressionAttributeValues: {
-                ':creatorId':creatorId,
-                ':week':week
+                ':createrId':createrId,
             }
-            /*
-            KeyConditionExpression: 'creatorId=:creatorId and weeknum=:startWeek and weeknum<=:endWeek',
+        }).promise()
+
+        return result.Items as SectionDoc[]
+    }
+
+    async getSectionsByCreaterIdInWeeksRange(createrId:string, weekNum:string): Promise<SectionDoc[]>{
+        console.log(`getSectionsByCreaterIdInWeeksRange(createrId:${createrId}, weekNum:${weekNum})`)
+        const result = await this.docClient.query({
+            TableName: this.tableName,
+            IndexName: this.createrIdIndex,
+            KeyConditionExpression: 'createrId=:createrId and weekNum=:weekNum',
+            //FilterExpression: 'weekNum=:weekNum',
             ExpressionAttributeValues: {
-                ':creatorId':creatorId,
-                ':startWeek':startWeek,
-                ':endWeek':endWeek,
-            }*/
+                ':createrId':createrId,
+                ':weekNum':weekNum,
+            }
         }).promise()
 
         return result.Items as SectionDoc[]
@@ -136,5 +123,5 @@ export const section:Section = new Section(
     process.env.SECTIONS_TABLE,
     process.env.WEEK_NUM_INDEX,
     process.env.TRAINER_ID_INDEX,
-    process.env.CREATOR_ID_INDEX,
+    process.env.CREATER_ID_INDEX,
 )

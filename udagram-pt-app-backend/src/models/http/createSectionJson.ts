@@ -1,7 +1,7 @@
 export interface CreateSectionJson {
-    week: string,
+    weekNum: string,
     trainerId: string,
-    creatorId: string,
+    createrId: string,
     startDateTime: string,
     endDateTime: string,
     place: string,

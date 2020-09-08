@@ -12,9 +12,9 @@ export const handler:APIGatewayProxyHandler = async(event: APIGatewayProxyEvent)
     console.log('parsed http body:', parseBody)
 
     const createSectionJson = {
-        week:parseBody.week,
+        weekNum:parseBody.weekNum,
         trainerId:parseBody.trainerId,
-        creatorId:parseBody.creatorId,
+        createrId:parseBody.createrId,
         startDateTime:parseBody.startDateTime,
         endDateTime:parseBody.endDateTime,
         place:parseBody.place

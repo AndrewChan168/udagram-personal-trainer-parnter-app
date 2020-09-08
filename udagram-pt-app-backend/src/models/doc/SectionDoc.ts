@@ -7,11 +7,11 @@ export enum SectionStatus {
 
 export interface SectionDoc {
     sectionId: string,
-    week: string,
+    weekNum: string,
     trainerId: string,
     trainerName: string,
-    creatorId: string,
-    creatorName: string,
+    createrId: string,
+    createrName: string,
     startDateTime: string,
     endDateTime: string,
     place: string,

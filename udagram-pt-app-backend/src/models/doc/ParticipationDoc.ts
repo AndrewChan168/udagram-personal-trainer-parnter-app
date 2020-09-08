@@ -8,7 +8,7 @@ export enum ParticipationStatus {
 
 export interface ParticipationDoc {
     participationId: string,
-    week: string,
+    weekNum: string,
     personId: string,
     personName: string,
     startDateTime: string,

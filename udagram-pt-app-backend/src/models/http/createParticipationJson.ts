@@ -1,5 +1,5 @@
 export interface CreateParticipationJson{
-    week: string,
+    weekNum: string,
     personId: string,
     startDateTime: string,
     endDateTime: string,

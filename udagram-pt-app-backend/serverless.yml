@@ -27,7 +27,7 @@ provider:
     WEEK_NUM_INDEX: weekNumIndex
     SECTION_ID_INDEX: sectionIdIndex
     TRAINER_ID_INDEX: trainerIdIndex
-    CREATOR_ID_INDEX: creatorIdIndex
+    CREATER_ID_INDEX: createrIdIndex
     PARTICIPATION_ID_INDEX: participationIdIndex
     PERSON_ID_INDEX: personIdIndex
     TOKEN_INDEX: tokenIndex
@@ -107,8 +107,8 @@ functions:
           path: section/trainer/{trainerId}/week/{week}
           cors: true
 
-  GetSecByCreator:
-    handler: src/lambda/http/section/getSecByCreator.handler
+  GetSecByCreater:
+    handler: src/lambda/http/section/getSecByCreater.handler
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -124,11 +124,11 @@ functions:
         Action:
           - dynamodb:Query
           - dynamodb:GetItem
-        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.SECTIONS_TABLE}/index/${self:provider.environment.CREATOR_ID_INDEX}
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.SECTIONS_TABLE}/index/${self:provider.environment.CREATER_ID_INDEX}
     events:
       - http:
           method: get
-          path: section/creator/{creatorId}/week/{week}
+          path: section/creater/{createrId}/week/{week}
           cors: true
 
   PostSection:
@@ -188,7 +188,7 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
-          - IndexName: ${self:provider.environment.CREATOR_ID_INDEX}
+          - IndexName: ${self:provider.environment.CREATER_ID_INDEX}
             KeySchema:
               - AttributeName: createrId
                 KeyType: HASH
