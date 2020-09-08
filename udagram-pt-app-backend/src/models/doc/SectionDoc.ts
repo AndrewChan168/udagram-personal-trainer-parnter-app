@@ -5,6 +5,8 @@ export enum SectionStatus {
     ENDED = 3,
 }
 
+export type SectionStatusString = keyof typeof SectionStatus;
+
 export interface SectionDoc {
     sectionId: string,
     weekNum: string,
@@ -15,5 +17,5 @@ export interface SectionDoc {
     startDateTime: string,
     endDateTime: string,
     place: string,
-    status: SectionStatus
+    secStatus: SectionStatus
 }

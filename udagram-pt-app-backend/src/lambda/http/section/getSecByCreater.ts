@@ -1,7 +1,7 @@
 import 'source-map-support'
 import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 
-import { SectionDoc } from '../../../models/doc/SectionDoc'
+import { SectionDoc,SectionStatus } from '../../../models/doc/SectionDoc'
 import { querySectionsByCreaterId } from '../../../businessLogic/section'
 
 export const handler:APIGatewayProxyHandler = async(event: APIGatewayProxyEvent):Promise<APIGatewayProxyResult>=>{
@@ -14,7 +14,13 @@ export const handler:APIGatewayProxyHandler = async(event: APIGatewayProxyEvent)
     console.log(`weekNum: ${weekNum}`);
 
     try{
-        const sections:SectionDoc[] = await querySectionsByCreaterId(createrId, weekNum);
+        const sectionDocs:SectionDoc[] = await querySectionsByCreaterId(createrId, weekNum);
+        const sections = [...sectionDocs].map((section)=>{
+            return {
+                ...section,
+                secStatus:SectionStatus[section.secStatus]
+            }
+        })
         console.log('get section successfully by createrId: ', createrId)
         return {
             statusCode: 200,

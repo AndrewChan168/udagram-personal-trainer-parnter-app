@@ -1,9 +1,7 @@
 import * as AWS from 'aws-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
-import { SectionDoc, SectionStatus } from '../models/doc/SectionDoc'
-
-type SectionStatusString = keyof typeof SectionStatus;
+import { SectionDoc, SectionStatusString } from '../models/doc/SectionDoc'
 
 class Section{
     constructor(
@@ -60,12 +58,10 @@ class Section{
     }
 
     async getSectionsByTrainerIdInWeeksRange(trainerId:string, weekNum:string): Promise<SectionDoc[]>{
-        console.log(`getSectionsByTrainerIdInWeeksRange(trainerId:${trainerId}, weekNum:${weekNum})`)
         const result = await this.docClient.query({
             TableName: this.tableName,
             IndexName: this.trainerIdIndex,
             KeyConditionExpression: 'trainerId=:trainerId and weekNum=:weekNum',
-            //FilterExpression: 'weekNum=:weekNum',
             ExpressionAttributeValues: {
                 ':trainerId':trainerId,
                 ':weekNum':weekNum,
@@ -89,12 +85,10 @@ class Section{
     }
 
     async getSectionsByCreaterIdInWeeksRange(createrId:string, weekNum:string): Promise<SectionDoc[]>{
-        console.log(`getSectionsByCreaterIdInWeeksRange(createrId:${createrId}, weekNum:${weekNum})`)
         const result = await this.docClient.query({
             TableName: this.tableName,
             IndexName: this.createrIdIndex,
             KeyConditionExpression: 'createrId=:createrId and weekNum=:weekNum',
-            //FilterExpression: 'weekNum=:weekNum',
             ExpressionAttributeValues: {
                 ':createrId':createrId,
                 ':weekNum':weekNum,
@@ -104,16 +98,16 @@ class Section{
         return result.Items as SectionDoc[]
     }
 
-    async updateSectionStatus(sectionId:string, status:SectionStatusString){
-        const statusNum = SectionStatus[status];
+    async updateSectionStatus(sectionId:string, statusNum:SectionStatusString){
+        console.log(`section.updateSectionStatus(sectionId:${sectionId}, statusNum:${statusNum})`)
         await this.docClient.update({
             TableName: this.tableName,
             Key: {"sectionId":sectionId},
-            UpdateExpression: "set status=:status",
+            UpdateExpression: "set secStatus=:secStatus",
             ExpressionAttributeValues: {
-                ":status":statusNum
+                ":secStatus":statusNum
             },
-            ReturnValues:"UPDATED_NEW"
+            ReturnValues:"ALL_NEW"
         }).promise()
     }
 }

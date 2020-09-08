@@ -1,7 +1,7 @@
 import 'source-map-support'
 import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 
-import { SectionDoc } from '../../../models/doc/SectionDoc'
+import { SectionDoc,SectionStatus } from '../../../models/doc/SectionDoc'
 import { createSection } from '../../../businessLogic/section'
 import { CreateSectionJson } from '../../../models/http/createSectionJson'
 
@@ -30,6 +30,7 @@ export const handler:APIGatewayProxyHandler = async(event: APIGatewayProxyEvent)
             },
             body: JSON.stringify({
                 ...sectionDoc,
+                secStatus:SectionStatus[sectionDoc.secStatus]
             })
         }
     }catch(err){

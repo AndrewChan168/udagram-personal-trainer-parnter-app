@@ -150,6 +150,54 @@ functions:
           path: section
           cors: true
 
+  PitchSecStatus:
+    handler: src/lambda/http/section/patchSectionStatus.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.SECTIONS_TABLE}
+    events:
+      - http:
+          method: patch
+          path: section/{sectionId}
+          cors: true
+
+  GetParticipation:
+    handler: src/lambda/http/participation/getParticipation.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PARTICIPATIONS_TABLE}
+    events:
+      - http:
+          method: get
+          path: particip/{participationId}
+          cors: true
+
+  PostParticipation:
+    handler: src/lambda/http/participation/postParticipation.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PARTICIPATIONS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PERSONS_TABLE}
+    events:
+      - http:
+          method: post
+          path: particip
+          cors: true
+
 resources:
   Resources:
     SectionsDynamoDBTable:

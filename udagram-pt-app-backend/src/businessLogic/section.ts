@@ -2,7 +2,7 @@ import * as uuid from 'uuid'
 
 import * as errors from '../errors/errors'
 
-import { SectionDoc,SectionStatus } from '../models/doc/SectionDoc'
+import { SectionDoc,SectionStatus,SectionStatusString } from '../models/doc/SectionDoc'
 import { section } from '../resources/Section'
 import { CreateSectionJson } from '../models/http/createSectionJson'
 import { queryPersonName,checkPersonValid } from '../businessLogic/person' 
@@ -30,7 +30,7 @@ export async function createSection(createSectionJson:CreateSectionJson):Promise
     const sectionDoc = {
         sectionId,
         ...createSectionJson,
-        status: SectionStatus.PENDING,
+        secStatus: SectionStatus.PENDING,
         trainerName,
         createrName
     } as SectionDoc
@@ -46,32 +46,46 @@ export async function querySection(sectionId:string):Promise<SectionDoc>{
     else throw new errors.NoSuchSectionError(`No such section was found by sectionId: ${sectionId}`)
 }
 
+export async function checkSectionValid(sectionId:string):Promise<boolean>{
+    const sectionDoc = await section.getSectionBySectionId(sectionId)
+    if (sectionDoc) return true
+    else return false
+}
+
 export async function querySectionsByTrainerId(trainerId:string, week:string):Promise<SectionDoc[]>{
-    console.log('inside querySectionsByTrainerId(trainerId, week)')
-    if(checkPersonValid(trainerId)) {
-        console.log(`checkPersonValid(trainerId) : ${checkPersonValid(trainerId)}`)
+    if(await checkPersonValid(trainerId)) {
         return await(section.getSectionsByTrainerIdInWeeksRange(trainerId, week))
     }
     else throw new errors.NoSuchPersonError(`No such person was found by trainerId: ${trainerId}`)
 }
 
 export async function queryAllSectionsByTrainerId(trainerId:string):Promise<SectionDoc[]>{
-    if(checkPersonValid(trainerId)) {
+    if(await checkPersonValid(trainerId)) {
         return await(section.getSectionsByTrainerId(trainerId))
     }
     else throw new errors.NoSuchPersonError(`No such person was found by trainerId: ${trainerId}`)
 }
 
 export async function querySectionsByCreaterId(createrId:string, week:string):Promise<SectionDoc[]>{
-    if(checkPersonValid(createrId)) {
+    if(await checkPersonValid(createrId)) {
         return await(section.getSectionsByCreaterIdInWeeksRange(createrId, week))
     }
     else throw new errors.NoSuchPersonError(`No such person was found by createrId: ${createrId}`)
 }
 
 export async function queryAllSectionsByCreaterId(createrId:string):Promise<SectionDoc[]>{
-    if(checkPersonValid(createrId)) {
+    if(await checkPersonValid(createrId)) {
         return await(section.getSectionsByCreaterId(createrId))
     }
     else throw new errors.NoSuchPersonError(`No such person was found by createrId: ${createrId}`)
+}
+
+export async function updateSectionStatus(sectionId:string, status:SectionStatusString){
+    console.log(`updateSectionStatus(sectionId:${sectionId}, status:${status})`)
+    const isSectionValid = await checkSectionValid(sectionId)
+    if(isSectionValid) {
+        console.log(`checkSectionValid(sectionId): ${isSectionValid}`)
+        await section.updateSectionStatus(sectionId, status)
+    }
+    else new errors.NoSuchSectionError(`No such section was found by sectionId: ${sectionId}`)
 }

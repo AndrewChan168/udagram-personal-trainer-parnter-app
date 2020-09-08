@@ -1,7 +1,7 @@
 import 'source-map-support'
 import { APIGatewayProxyHandler, APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 
-import { ParticipationDoc } from '../../../models/doc/ParticipationDoc'
+import { ParticipationDoc, ParticipationStatus } from '../../../models/doc/ParticipationDoc'
 import { CreateParticipationJson } from '../../../models/http/createParticipationJson'
 import { createParticipation } from '../../../businessLogic/participation'
 
@@ -13,6 +13,7 @@ export const handler:APIGatewayProxyHandler = async(event: APIGatewayProxyEvent)
 
     const createParticipationJson = {
         weekNum:parseBody.weekNum,
+        sectionId:parseBody.sectionId,
         personId:parseBody.personId,
         startDateTime:parseBody.startDateTime,
         endDateTime:parseBody.endDateTime,
@@ -27,7 +28,8 @@ export const handler:APIGatewayProxyHandler = async(event: APIGatewayProxyEvent)
                 'Access-Control-Allow-Origin': '*'
             },
             body: JSON.stringify({
-                ...participationDoc
+                ...participationDoc,
+                particiStatus:ParticipationStatus[participationDoc.particiStatus]
             })
         }
     }catch(err){

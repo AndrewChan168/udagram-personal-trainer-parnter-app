@@ -22,13 +22,14 @@ class Participation{
     }
 
     async getParticipationByParticipationId(participationId:string):Promise<ParticipationDoc>{
+        console.log(`participation.getParticipationByParticipationId(participationId:${participationId})`)
         const result = await this.docClient.get({
             TableName: this.tableName,
             Key: {
                 participationId: participationId
             }
         }).promise()
-
+        console.log(`result in participation.getParticipationByParticipationId(): `, result.Item)
         return result.Item as ParticipationDoc
     }
 
@@ -92,18 +93,18 @@ class Participation{
         await this.docClient.update({
             TableName: this.tableName,
             Key: {"participationId":participationId},
-            UpdateExpression: "set status=:status",
+            UpdateExpression: "set particiStatus=:particiStatus",
             ExpressionAttributeValues: {
-                ":status":statusNum
+                ":particiStatus":statusNum
             },
-            ReturnValues:"UPDATED_NEW"
+            ReturnValues:"ALL_NEW"
         }).promise()
     }
 }
 
 export const participation:Participation = new Participation(
     new AWS.DynamoDB.DocumentClient(),
-    process.env.PERSONS_TABLE,
+    process.env.PARTICIPATIONS_TABLE,
     process.env.SECTION_ID_INDEX,
     process.env.PERSON_ID_INDEX,
     process.env.WEEK_NUM_INDEX,

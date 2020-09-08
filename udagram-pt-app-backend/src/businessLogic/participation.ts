@@ -16,7 +16,7 @@ export async function createParticipation(createParticipationJson:CreateParticip
         participationId,
         personName,
         ...createParticipationJson,
-        status: ParticipationStatus.PENDING
+        particiStatus: ParticipationStatus.PENDING
     } as ParticipationDoc
 
     await participation.createParticipation(participationDoc)
@@ -25,6 +25,7 @@ export async function createParticipation(createParticipationJson:CreateParticip
 }
 
 export async function queryParticipation(participationId:string):Promise<ParticipationDoc>{
+    console.log(`queryParticipation(participationId:${participationId})`)
     const participationDoc = await participation.getParticipationByParticipationId(participationId)
     if (participationDoc) return participationDoc
     else throw new errors.NoSuchParticipationError(`No such participation was found by participationId: ${participationId}`)
@@ -40,7 +41,7 @@ export async function queryParticipations(personId:string, startWeek:string, end
 }
 
 export async function queryAllParticipations(personId:string):Promise<ParticipationDoc[]>{
-    const isPersonValid = checkPersonValid(personId)
+    const isPersonValid = await checkPersonValid(personId)
 
     if (!isPersonValid) throw new errors.NoSuchPersonError(`No such person was found by personId: ${personId}`)
 
