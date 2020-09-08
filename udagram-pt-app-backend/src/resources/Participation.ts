@@ -59,37 +59,21 @@ class Participation{
         return result.Items as ParticipationDoc[]
     }
 
-    async getParticipationsByPersonIdInWeeksRange(personId:string, startWeek:string, endWeek:string):Promise<ParticipationDoc[]>{
+    async getParticipationsByPersonIdInWeeksRange(personId:string, weekNum:string):Promise<ParticipationDoc[]>{
         const result = await this.docClient.query({
             TableName: this.tableName,
             IndexName: this.weekNumIndex,
-            KeyConditionExpression: 'personId=:personId and weeknum>=:startWeek and weeknum<=:endWeek',
+            KeyConditionExpression: 'personId=:personId and weekNum=:weekNum',
             ExpressionAttributeValues: {
                 ':personId':personId,
-                ':startWeek':startWeek,
-                ':endWeek':endWeek,
+                ':weekNum':weekNum,
             }
         }).promise()
 
         return result.Items as ParticipationDoc[]
     }
 
-    async getParticipationsInWeeksRange(startWeek:string, endWeek:string):Promise<ParticipationDoc[]>{
-        const result = await this.docClient.query({
-            TableName: this.tableName,
-            IndexName: this.weekNumIndex,
-            KeyConditionExpression: 'weeknum>=:startWeek and weeknum<=:endWeek',
-            ExpressionAttributeValues: {
-                ':startWeek':startWeek,
-                ':endWeek':endWeek,
-            }
-        }).promise()
-
-        return result.Items as ParticipationDoc[]
-    }
-
-    async updateParticipationStatus(participationId:string, status:ParticipationStatusString){
-        const statusNum = ParticipationStatus[status];
+    async updateParticipationStatus(participationId:string, statusNum:ParticipationStatusString){
         await this.docClient.update({
             TableName: this.tableName,
             Key: {"participationId":participationId},

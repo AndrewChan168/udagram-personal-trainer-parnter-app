@@ -74,18 +74,16 @@ export async function querySectionsByCreaterId(createrId:string, week:string):Pr
 }
 
 export async function queryAllSectionsByCreaterId(createrId:string):Promise<SectionDoc[]>{
-    if(await checkPersonValid(createrId)) {
+    const isSectionValid = await checkSectionValid(createrId)
+    if(isSectionValid) {
         return await(section.getSectionsByCreaterId(createrId))
     }
     else throw new errors.NoSuchPersonError(`No such person was found by createrId: ${createrId}`)
 }
 
 export async function updateSectionStatus(sectionId:string, status:SectionStatusString){
-    console.log(`updateSectionStatus(sectionId:${sectionId}, status:${status})`)
     const isSectionValid = await checkSectionValid(sectionId)
     if(isSectionValid) {
-        console.log(`checkSectionValid(sectionId): ${isSectionValid}`)
         await section.updateSectionStatus(sectionId, status)
-    }
-    else new errors.NoSuchSectionError(`No such section was found by sectionId: ${sectionId}`)
+    }else throw new errors.NoSuchSectionError(`No such section was found by sectionId: ${sectionId}`)
 }

@@ -1,7 +1,7 @@
 import * as AWS from 'aws-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
-import { SectionDoc, SectionStatusString } from '../models/doc/SectionDoc'
+import { SectionDoc, SectionStatusString, SectionStatus } from '../models/doc/SectionDoc'
 
 class Section{
     constructor(
@@ -30,14 +30,13 @@ class Section{
         return result.Item as SectionDoc
     }
 
-    async getSectionsInWeeksRange(startWeek:string, endWeek:string):Promise<SectionDoc[]>{
+    async getSectionsByWeek(week:string):Promise<SectionDoc[]>{
         const result = await this.docClient.query({
             TableName: this.tableName,
             IndexName: this.weekNumIndex,
-            KeyConditionExpression: 'weeknum>=:startWeek and weeknum<=:endWeek',
+            KeyConditionExpression: 'weekNum>=:week',
             ExpressionAttributeValues: {
-                ':startWeek':startWeek,
-                ':endWeek':endWeek,
+                ':week':week
             }
         }).promise()
 
@@ -99,7 +98,6 @@ class Section{
     }
 
     async updateSectionStatus(sectionId:string, statusNum:SectionStatusString){
-        console.log(`section.updateSectionStatus(sectionId:${sectionId}, statusNum:${statusNum})`)
         await this.docClient.update({
             TableName: this.tableName,
             Key: {"sectionId":sectionId},

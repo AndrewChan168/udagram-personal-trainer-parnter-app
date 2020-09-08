@@ -179,6 +179,54 @@ functions:
           path: particip/{participationId}
           cors: true
 
+  GetParticiBySec:
+    handler: src/lambda/http/participation/getParticiBySec.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PARTICIPATIONS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PARTICIPATIONS_TABLE}/index/${self:provider.environment.SECTION_ID_INDEX}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.SECTIONS_TABLE}
+    events:
+      - http:
+          method: get
+          path: particip/section/{sectionId}
+          cors: true
+
+  GetParticiByPerson:
+    handler: src/lambda/http/participation/getParticiByPerson.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PARTICIPATIONS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PARTICIPATIONS_TABLE}/index/${self:provider.environment.WEEK_NUM_INDEX}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PERSONS_TABLE}
+    events:
+      - http:
+          method: get
+          path: particip/person/{personId}/week/{week}
+          cors: true
+
   PostParticipation:
     handler: src/lambda/http/participation/postParticipation.handler
     iamRoleStatements:
@@ -198,6 +246,21 @@ functions:
           path: particip
           cors: true
 
+  PitchParticiStatus:
+    handler: src/lambda/http/participation/patchParticiStatus.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:GetItem
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.PARTICIPATIONS_TABLE}
+    events:
+      - http:
+          method: patch
+          path: particip/{participationId}
+          cors: true
+
 resources:
   Resources:
     SectionsDynamoDBTable:
@@ -214,8 +277,6 @@ resources:
             AttributeType: S
           - AttributeName: createrId
             AttributeType: S
-          - AttributeName: startDateTime
-            AttributeType: S
         KeySchema:
           - AttributeName: sectionId
             KeyType: HASH
@@ -224,8 +285,6 @@ resources:
             KeySchema:
               - AttributeName: weekNum
                 KeyType: HASH
-              - AttributeName: startDateTime
-                KeyType: RANGE
             Projection:
               ProjectionType: ALL
           - IndexName: ${self:provider.environment.TRAINER_ID_INDEX}
@@ -259,8 +318,6 @@ resources:
             AttributeType: S
           - AttributeName: sectionId
             AttributeType: S
-          - AttributeName: startDateTime
-            AttributeType: S
         KeySchema:
           - AttributeName: participationId
             KeyType: HASH
@@ -269,8 +326,6 @@ resources:
             KeySchema:
               - AttributeName: weekNum
                 KeyType: HASH
-              - AttributeName: startDateTime
-                KeyType: RANGE
             Projection:
               ProjectionType: ALL
           - IndexName: ${self:provider.environment.PERSON_ID_INDEX}
