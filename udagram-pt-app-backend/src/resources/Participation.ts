@@ -62,7 +62,7 @@ class Participation{
     async getParticipationsByPersonIdInWeeksRange(personId:string, weekNum:string):Promise<ParticipationDoc[]>{
         const result = await this.docClient.query({
             TableName: this.tableName,
-            IndexName: this.weekNumIndex,
+            IndexName: this.personIdIndex,
             KeyConditionExpression: 'personId=:personId and weekNum=:weekNum',
             ExpressionAttributeValues: {
                 ':personId':personId,
